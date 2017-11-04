@@ -19,17 +19,18 @@ stepper.o: stepper.c
 # ===
 # CUDA Main driver and sample run
 
-lshallow_cuda: ldriver.o shallow2d.o stepper.o
-	$(NVCC) $(NVCCFLAGS) $(LUA_CFLAGS) -o $@ $^ $(LUA_LIBS) $(LIBS)
+shallow2d_test: shallow2d_test.o shallow2d.o shallow2d_cu.o
+	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(LIBS)
 
-ldriver.o: ldriver.c shallow2d.cuh
-	$(NVCC) $(NVCCFLAGS) $(LUA_CFLAGS) -c $<
-
-shallow2d.o: shallow2d.cu
+shallow2d_test.o: shallow2d_test.c shallow2d.cuh shallow2d.h
 	$(NVCC) $(NVCCFLAGS) -c $<
 
-stepper.o: stepper.cu
+shallow2d_cu.o: shallow2d.cu
 	$(NVCC) $(NVCCFLAGS) -c $<
+
+shallow2d.o: shallow2d.c
+	$(CC) $(CFLAGS) -c $<
+
 
 # ===
 # Documentation
