@@ -80,7 +80,7 @@ int main(int argc, char** argv){
 	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );
 	double t3 = omp_get_wtime();
 	printf("GPU code time: %f\n", t3-t2);
-	printf("Check correctness ")
+	printf("Check correctness ");
 	for (i = 0; i < ncell * 3; i++) {
     	if (FU[i] != tFU[i] or GU[i] != tFU or U[i] != tU[i]){
     		printf("Wrong! \n");
