@@ -54,7 +54,7 @@ int main(int argc, char** argv){
 
 	// Execute on GPU
 	// device copies of FU, GU, U
-    float *dev_FU, *dev_GU, *dev_U, *cxy;
+    float *dev_FU, *dev_GU, *dev_U, *dev_cxy;
     int size = ncell*3*sizeof(float);
     cudaMalloc( (void**)&dev_FU, size );
     cudaMalloc( (void**)&dev_GU, size );
@@ -64,7 +64,7 @@ int main(int argc, char** argv){
     cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
-	testShallow2d_by_reference(cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride);
+	testShallow2d_by_reference(dev_cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride);
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );
