@@ -35,7 +35,7 @@ void print_array(float* array, int len) {
 int main(int argc, char** argv){
 	cudaEvent_t start,stop;
 	float ms;
-	const int nx = 500, ny = 500;
+	const int nx = 128, ny = 128;
 	const int ncell = nx * ny;
 	const int field_stride = nx * ny;
 	float cxy[2] = {1.0, 2.0};
