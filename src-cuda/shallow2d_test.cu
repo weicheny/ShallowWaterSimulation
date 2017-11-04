@@ -79,7 +79,7 @@ int main(int argc, char** argv){
     	FU[i] = 1; GU[i] = 1; U[i] = 1;
 	}
 
-	// Execute on GPU: Use function reference
+	// Execute on GPU: using function pointer
 	// device copies of FU, GU, U
     float *dev_FU, *dev_GU, *dev_U, *dev_cxy;
     int size = ncell*3*sizeof(float);
@@ -87,42 +87,6 @@ int main(int argc, char** argv){
     cudaMalloc( (void**)&dev_GU, size );
     cudaMalloc( (void**)&dev_U,  size );
     cudaMalloc( (void**)&dev_cxy, 2*sizeof(float) );
-    // We only need to copy to device once, this time should be amortized.
-    cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
-    cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
-    cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
-    cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
-
-    // Time the GPU
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
-	cudaEventRecord(start, 0);
-
-	testShallow2d_by_reference(dev_cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride);
-
-	cudaEventRecord(stop, 0);
-	cudaEventSynchronize(stop);
-	cudaEventElapsedTime(&ms, start, stop);
-	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
-	printf("GPU: %f ms. \n",ms);
-
-	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
-	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
-	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );	
-
-	printf("Check correctness ");
-	for (i = 0; i < ncell * 3; i++)
-    	if (FU[i] != tFU[i] or GU[i] != tGU[i] or U[i] != tU[i])
-    		printf("Wrong! \n");
-   
-	printf("\n");
-
-	// Reset
-	for (i = 0; i < ncell * 3; i++) {
-    	FU[i] = 1; GU[i] = 1; U[i] = 1;
-	}
-
-	// Execute on GPU: using function pointer
 	// copy the reseted data to GPU
 	cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
@@ -149,6 +113,13 @@ int main(int argc, char** argv){
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );	
+
+	printf("Check correctness ");
+	for (i = 0; i < ncell * 3; i++)
+    	if (FU[i] != tFU[i] or GU[i] != tGU[i] or U[i] != tU[i])
+    		printf("Wrong! \n");
+   
+	printf("\n");
 
 	cudaFree( dev_FU );
 	cudaFree( dev_GU );
