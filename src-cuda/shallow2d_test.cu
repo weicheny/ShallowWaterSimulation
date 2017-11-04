@@ -94,9 +94,8 @@ int main(int argc, char** argv){
 	gpuErrchk(cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice ));
     gpuErrchk(cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice ));
     gpuErrchk(cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice ));
-    gpuErrchk(cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice));
-	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
-	
+    gpuErrchk(cudaMemcpy( dev_cxy, cxy, 2*sizeof(float), cudaMemcpyHostToDevice ));
+
     // Time the GPU
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -116,6 +115,8 @@ int main(int argc, char** argv){
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );	
+
+	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
 
 	printf("Check correctness ");
 	for (i = 0; i < ncell * 3; i++)
