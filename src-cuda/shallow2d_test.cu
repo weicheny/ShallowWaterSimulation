@@ -73,13 +73,22 @@ int main(int argc, char** argv){
     cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
-	double t2 = omp_get_wtime();
+
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start, 0);
+
 	testShallow2d_by_reference(dev_cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride);
+
+	cudaEventRecord(stop, 0);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(&ms, start, stop);
+	printf("GPU: %f ms.",ms);
+
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
-	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );
-	double t3 = omp_get_wtime();
-	printf("GPU code time: %f\n", t3-t2);
+	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );	
+
 	printf("Check correctness ");
 	for (i = 0; i < ncell * 3; i++) {
     	if (FU[i] != tFU[i] or GU[i] != tFU[i] or U[i] != tU[i]){
