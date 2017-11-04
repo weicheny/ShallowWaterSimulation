@@ -26,7 +26,7 @@ void testShallow2d_baseline(float* cxy,
 
 void print_array(float* array, int len) {
 	for(int i = 0; i < len; i++) {
-	    printf("%f.2 ", array[i]);    
+	    printf("%.2f ", array[i]);    
 	}
 	printf("\n");
 }
