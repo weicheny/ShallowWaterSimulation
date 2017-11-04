@@ -29,7 +29,7 @@ shallow2d.o: shallow2d.cu
 	$(NVCC) -c $<
 
 shallow2d_base.o: shallow2d_base.c
-	$(CC) $(CFLAGS) -c $<
+	$(NVCC) -c $<
 
 
 # ===
