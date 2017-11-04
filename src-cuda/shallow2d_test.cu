@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "shallow2d.cuh"
+// #include "shallow2d.cuh"
 #include "shallow2d.h"
 
 typedef void (*flux_t)(float* FU, float* GU, const float* U,
@@ -8,13 +8,12 @@ typedef void (*flux_t)(float* FU, float* GU, const float* U,
 typedef void (*speed_t)(float* cxy, const float* U,
                         int nx, int ny, int field_stride);
 
-__global__ 
-void testShallow2d_by_reference(float* cxy, 
-				float* FU, float* GU, const float* U,
-                int nx, int ny, int field_stride){
-	shallow2d_flux_cu(FU, GU, U, nx, ny, field_stride);
-	shallow2d_speed_cu(cxy, U, nx, ny, field_stride);
-}
+// void testShallow2d_by_reference(float* cxy, 
+// 				float* FU, float* GU, const float* U,
+//                 int nx, int ny, int field_stride){
+// 	shallow2d_flux_cu(FU, GU, U, nx, ny, field_stride);
+// 	shallow2d_speed_cu(cxy, U, nx, ny, field_stride);
+// }
 
 void testShallow2d_baseline(float* cxy, 
 				float* FU, float* GU, const float* U,
