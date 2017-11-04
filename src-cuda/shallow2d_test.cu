@@ -82,7 +82,7 @@ int main(int argc, char** argv){
 	printf("GPU code time: %f\n", t3-t2);
 	printf("Check correctness ");
 	for (i = 0; i < ncell * 3; i++) {
-    	if (FU[i] != tFU[i] or GU[i] != tFU or U[i] != tU[i]){
+    	if (FU[i] != tFU[i] or GU[i] != tFU[i] or U[i] != tU[i]){
     		printf("Wrong! \n");
     	}
 	}
