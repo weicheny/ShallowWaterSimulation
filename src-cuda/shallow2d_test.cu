@@ -54,7 +54,7 @@ int main(int argc, char** argv){
 
 	// Execute on GPU
 	// device copies of FU, GU, U
-    float *dev_FU, *dev_GU, *dev_U, *cxy
+    float *dev_FU, *dev_GU, *dev_U, *cxy;
     int size = ncell*3*sizeof(float);
     cudaMalloc( (void**)&dev_FU, size );
     cudaMalloc( (void**)&dev_GU, size );
