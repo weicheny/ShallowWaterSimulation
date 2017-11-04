@@ -19,15 +19,16 @@ void testShallow2d_by_reference(float* cxy,
 void testShallow2d_baseline(float* cxy, 
 				float* FU, float* GU, const float* U,
                 int nx, int ny, int field_stride){
-	shallow2d_flux(FU, GU, U, nx, ny, field_stride);
-	shallow2d_speed(cxy, U, nx, ny, field_stride);
+	shallow2d_flux(FU, GU, U, nx*ny, field_stride);
+	shallow2d_speed(cxy, U, nx*ny, field_stride);
 }
 
 int main(int argc, char** argv){
 	const int nx = 1, ny = 2;
 	const int ncell = nx * ny;
-	count int field_stride = nx * ny;
+	const int field_stride = nx * ny;
 	float cxy[2] = {1.0, 2.0};
+	float FU[ncell * 3], GU[ncell * 3], U[ncell * 3];
 	int i;
 	for (i = 0; i < ncell * 3; i++) {
     	FU[i] = rand();
