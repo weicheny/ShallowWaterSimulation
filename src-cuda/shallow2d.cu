@@ -72,7 +72,7 @@ void shallow2dv_speed(float* restrict cxy,
 }
 
 extern "C"
-void shallow2d_flux(float* FU, float* GU, const float* U,
+void shallow2d_flux_cu(float* FU, float* GU, const float* U,
                     int nx, int ny, int field_stride)
 {
     cudaMemcpy(FU, U+field_stride,   nx * ny * sizeof(float), cudaMemcpyDeviceToDevice);
@@ -84,7 +84,7 @@ void shallow2d_flux(float* FU, float* GU, const float* U,
 }
 
 extern "C"
-void shallow2d_speed(float* cxy, const float* U,
+void shallow2d_speed_cu(float* cxy, const float* U,
                      int nx, int ny, int field_stride)
 {
     shallow2dv_speed<<<nx, ny>>>(cxy, U, U+field_stride, U+2*field_stride, g);
