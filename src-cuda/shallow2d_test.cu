@@ -39,9 +39,9 @@ int main(int argc, char** argv){
 	float FU[ncell * 3], GU[ncell * 3], U[ncell * 3];
 	int i;
 	for (i = 0; i < ncell * 3; i++) {
-    	FU[i] = rand();
-    	GU[i] = rand();
-    	U[i] = rand();
+    	FU[i] = 1;
+    	GU[i] = 1;
+    	U[i] = 1;
 	}
 	print_array(FU, ncell*3);
 	// Execute baseline code
