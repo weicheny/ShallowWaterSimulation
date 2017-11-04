@@ -91,11 +91,12 @@ int main(int argc, char** argv){
     gpuErrchk(cudaMalloc( (void**)&dev_U,  size ));
     gpuErrchk(cudaMalloc( (void**)&dev_cxy, 2*sizeof(float) ));
 	// copy the reseted data to GPU
-	cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
-    cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
-    cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
-    cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
-
+	gpuErrchk(cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice ));
+    gpuErrchk(cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice ));
+    gpuErrchk(cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice ));
+    gpuErrchk(cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice));
+	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
+	
     // Time the GPU
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -110,7 +111,6 @@ int main(int argc, char** argv){
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&ms, start, stop);
-	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
 	printf("GPU: %f ms. \n",ms);
 
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
