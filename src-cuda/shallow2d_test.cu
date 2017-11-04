@@ -43,8 +43,8 @@ int main(int argc, char** argv){
     	GU[i] = rand();
     	U[i] = rand();
 	}
-	print_array(FU)
+	print_array(FU);
 	// Execute baseline code
 	testShallow2d_baseline(cxy, FU, GU, U, nx, ny, field_stride);
-	print_array(FU)
+	print_array(FU);
 }
