@@ -51,10 +51,9 @@
  * $y$ momentum is at `U+2*field_stride`.
  */
 
-// Run in GPU
-__global__ void shallow2d_flux_cu(float* FU, float* GU, const float* U,
+void shallow2d_flux_cu(float* FU, float* GU, const float* U,
                     int nx, int ny, int field_stride);
-__global__ void shallow2d_speed_cu(float* cxy, const float* U,
+void shallow2d_speed_cu(float* cxy, const float* U,
                      int nx, int ny, int field_stride);
 
 //ldoc off
