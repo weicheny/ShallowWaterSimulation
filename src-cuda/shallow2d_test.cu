@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
+#include <sys/time.h>
 extern "C" {
 #include "shallow2d.cuh"
 #include "shallow2d_base.h"
@@ -47,10 +47,19 @@ int main(int argc, char** argv){
 	// print_array(FU, ncell*3);
 
 	// Execute baseline code
-	double t0 = omp_get_wtime();
+	struct timeval startc, end;
+ 	long seconds, useconds;
+ 	double mtime;
+    gettimeofday(&startc, NULL);
 	testShallow2d_baseline(cxy, FU, GU, U, nx, ny, field_stride);
-    double t1 = omp_get_wtime();
-    printf("CPU code time: %f\n", t1-t0);
+	gettimeofday(&end, NULL);
+	seconds  = end.tv_sec  - startc.tv_sec;
+	useconds = end.tv_usec - startc.tv_usec;
+	mtime = useconds;
+	mtime/=1000;
+	mtime+=seconds*1000;
+    printf("CPU: %g ms.",mtime);
+
     // save true values
 	float tFU[ncell * 3], tGU[ncell * 3], tU[ncell * 3];
 	for (i = 0; i < ncell * 3; i++) {
