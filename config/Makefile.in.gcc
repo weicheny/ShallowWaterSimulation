@@ -10,7 +10,7 @@ CXXFLAGS=-std=c++14 -g
 NVCC=nvcc
 #NVCCFLAGS=-O3 -std=c++11
 NVCCFLAGS=-O3 -std=c99
-NVCCLIBS=-lm -lcuda
+NVCCLIBS=-lm -lcuda -fopenmp
 
 # Optimization flags
 OPTFLAGS=-O3 -march=native -fopenmp -ffast-math
