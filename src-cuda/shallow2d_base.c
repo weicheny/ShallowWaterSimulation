@@ -67,7 +67,7 @@ void shallow2dv_speed(float* restrict cxy,
     cxy[1] = cy;
 }
 
-
+extern "C"
 void shallow2d_flux(float* FU, float* GU, const float* U,
                     int ncell, int field_stride)
 {
@@ -77,7 +77,7 @@ void shallow2d_flux(float* FU, float* GU, const float* U,
                     g, ncell);
 }
 
-
+extern "C"
 void shallow2d_speed(float* cxy, const float* U,
                      int ncell, int field_stride)
 {

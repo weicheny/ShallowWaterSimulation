@@ -52,9 +52,9 @@
  */
 
 // Run in GPU
-__device__ void shallow2d_flux_cu(float* FU, float* GU, const float* U,
+__global__ void shallow2d_flux_cu(float* FU, float* GU, const float* U,
                     int nx, int ny, int field_stride);
-__device__ void shallow2d_speed_cu(float* cxy, const float* U,
+__global__ void shallow2d_speed_cu(float* cxy, const float* U,
                      int nx, int ny, int field_stride);
 
 //ldoc off
