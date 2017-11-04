@@ -58,7 +58,7 @@ int main(int argc, char** argv){
 	mtime = useconds;
 	mtime/=1000;
 	mtime+=seconds*1000;
-    printf("CPU: %g ms.",mtime);
+    printf("CPU: %g ms. \n",mtime);
 
     // save true values
 	float tFU[ncell * 3], tGU[ncell * 3], tU[ncell * 3];
@@ -94,7 +94,7 @@ int main(int argc, char** argv){
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&ms, start, stop);
-	printf("GPU: %f ms.",ms);
+	printf("GPU: %f ms. \n",ms);
 
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
