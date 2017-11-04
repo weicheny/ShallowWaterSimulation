@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 extern "C" {
-// #include "shallow2d.cuh"
+#include "shallow2d.cuh"
 #include "shallow2d_base.h"
 }
 
@@ -10,12 +10,12 @@ typedef void (*flux_t)(float* FU, float* GU, const float* U,
 typedef void (*speed_t)(float* cxy, const float* U,
                         int nx, int ny, int field_stride);
 
-// void testShallow2d_by_reference(float* cxy, 
-// 				float* FU, float* GU, const float* U,
-//                 int nx, int ny, int field_stride){
-// 	shallow2d_flux_cu(FU, GU, U, nx, ny, field_stride);
-// 	shallow2d_speed_cu(cxy, U, nx, ny, field_stride);
-// }
+void testShallow2d_by_reference(float* cxy, 
+				float* FU, float* GU, const float* U,
+                int nx, int ny, int field_stride){
+	shallow2d_flux_cu(FU, GU, U, nx, ny, field_stride);
+	shallow2d_speed_cu(cxy, U, nx, ny, field_stride);
+}
 
 void testShallow2d_baseline(float* cxy, 
 				float* FU, float* GU, const float* U,
@@ -39,12 +39,15 @@ int main(int argc, char** argv){
 	float FU[ncell * 3], GU[ncell * 3], U[ncell * 3];
 	int i;
 	for (i = 0; i < ncell * 3; i++) {
-    	FU[i] = 1;
-    	GU[i] = 1;
-    	U[i] = 1;
+    	FU[i] = 1; GU[i] = 1; U[i] = 1;
 	}
 	print_array(FU, ncell*3);
 	// Execute baseline code
 	testShallow2d_baseline(cxy, FU, GU, U, nx, ny, field_stride);
+	print_array(FU, ncell*3);
+	for (i = 0; i < ncell * 3; i++) {
+    	FU[i] = 1; GU[i] = 1; U[i] = 1;
+	}
+	testShallow2d_by_reference(cxy, FU, GU, U, nx, ny, field_stride);
 	print_array(FU, ncell*3);
 }
