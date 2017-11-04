@@ -21,7 +21,7 @@ __constant__ static const float g = 9.8;
 
 
 // total number of cells (ncells) = nx_all * ny_all
-__device__ static 
+__global__ static 
 void shallow2dv_flux(float* restrict fh,
                      float* restrict fhu,
                      float* restrict fhv,
@@ -31,11 +31,8 @@ void shallow2dv_flux(float* restrict fh,
                      const float* restrict h,
                      const float* restrict hu,
                      const float* restrict hv,
-                     float g,
-                     int ncell)
+                     float g)
 {
-    cudaMemcpy(fh, hu, ncell * sizeof(float), cudaMemcpyDeviceToDevice);
-    cudaMemcpy(gh, hv, ncell * sizeof(float), cudaMemcpyDeviceToDevice);
     const unsigned int idx = (blockIdx.x * blockDim.x) + threadIdx.x;
     const unsigned int idy = (blockIdx.y * blockDim.y) + threadIdx.y;
     // linearize to 1D
@@ -50,13 +47,12 @@ void shallow2dv_flux(float* restrict fh,
 }
 
 
-__device__ static
+__global__  static
 void shallow2dv_speed(float* restrict cxy,
                       const float* restrict h,
                       const float* restrict hu,
                       const float* restrict hv,
-                      float g,
-                      int ncell)
+                      float g)
 {
     float cx = cxy[0];
     float cy = cxy[1];
@@ -75,19 +71,19 @@ void shallow2dv_speed(float* restrict cxy,
     cxy[1] = cy;
 }
 
-__device__
 void shallow2d_flux(float* FU, float* GU, const float* U,
                     int nx, int ny, int field_stride)
 {
+    cudaMemcpy(FU, U+field_stride,   nx * ny * sizeof(float), cudaMemcpyDeviceToDevice);
+    cudaMemcpy(GU, U+2*field_stride, nx * ny * sizeof(float), cudaMemcpyDeviceToDevice);
     shallow2dv_flux<<<nx, ny>>>(FU, FU+field_stride, FU+2*field_stride,
                     GU, GU+field_stride, GU+2*field_stride,
                     U,  U +field_stride, U +2*field_stride,
-                    g, nx * ny);
+                    g);
 }
 
-__device__
 void shallow2d_speed(float* cxy, const float* U,
                      int nx, int ny, int field_stride)
 {
-    shallow2dv_speed<<<nx, ny>>>(cxy, U, U+field_stride, U+2*field_stride, g, nx * ny);
+    shallow2dv_speed<<<nx, ny>>>(cxy, U, U+field_stride, U+2*field_stride, g);
 }
