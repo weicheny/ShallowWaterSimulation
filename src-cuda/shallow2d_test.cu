@@ -46,7 +46,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 int main(int argc, char** argv){
 	cudaEvent_t start,stop;
 	float ms;
-	const int nx = 64, ny = 64;
+	const int nx = 1024, ny = 1024;
 	const int ncell = nx * ny;
 	const int field_stride = nx * ny;
 	float cxy[2] = {1.0, 2.0};
