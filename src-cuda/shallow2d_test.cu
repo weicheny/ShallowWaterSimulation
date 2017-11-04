@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 // #include "shallow2d.cuh"
-#include "shallow2d.h"
+#include "shallow2d_base.h"
 
 typedef void (*flux_t)(float* FU, float* GU, const float* U,
                        int nx, int ny, int field_stride);
