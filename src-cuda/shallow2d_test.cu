@@ -48,6 +48,20 @@ int main(int argc, char** argv){
 	for (i = 0; i < ncell * 3; i++) {
     	FU[i] = 1; GU[i] = 1; U[i] = 1;
 	}
-	testShallow2d_by_reference(cxy, FU, GU, U, nx, ny, field_stride);
+
+	// Execute on GPU
+	// device copies of FU, GU, U
+    float *dev_FU, *dev_GU, *dev_U;
+    int size = ncell*3*sizeof(float);
+    cudaMalloc( (void**)&dev_FU, size );
+    cudaMalloc( (void**)&dev_GU, size );
+    cudaMalloc( (void**)&dev_U,  size );
+    cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
+	testShallow2d_by_reference(cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride);
+	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
+	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
+	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );
 	print_array(FU, ncell*3);
 }
