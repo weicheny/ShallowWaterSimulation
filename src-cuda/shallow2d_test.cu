@@ -101,11 +101,10 @@ int main(int argc, char** argv){
 	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );	
 
 	printf("Check correctness ");
-	for (i = 0; i < ncell * 3; i++) {
+	for (i = 0; i < ncell * 3; i++)
     	if (FU[i] != tFU[i] or GU[i] != tGU[i] or U[i] != tU[i]){
     		printf("Wrong! \n");
-    	}
-	}
+   
 	printf("\n");
 
 	cudaFree( dev_FU );
