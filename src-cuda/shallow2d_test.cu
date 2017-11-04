@@ -24,6 +24,13 @@ void testShallow2d_baseline(float* cxy,
 	shallow2d_speed(cxy, U, nx*ny, field_stride);
 }
 
+void print_array(float* array, int len) {
+	for(int i = 0; i < len; i++) {
+	    printf("%d ", array[i]);    
+	}
+	printf("\n");
+}
+
 int main(int argc, char** argv){
 	const int nx = 1, ny = 2;
 	const int ncell = nx * ny;
@@ -36,7 +43,8 @@ int main(int argc, char** argv){
     	GU[i] = rand();
     	U[i] = rand();
 	}
-
+	print_array(FU)
 	// Execute baseline code
 	testShallow2d_baseline(cxy, FU, GU, U, nx, ny, field_stride);
+	print_array(FU)
 }
