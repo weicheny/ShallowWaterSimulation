@@ -22,7 +22,7 @@ include ../config/Makefile.in.$(PLATFORM)
 shallow2d_test: shallow2d_test.o shallow2d.o shallow2d_cu.o
 	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(LIBS)
 
-shallow2d_test.o: shallow2d_test.c shallow2d.cuh shallow2d.h
+shallow2d_test.o: shallow2d_test.cu shallow2d.cuh shallow2d.h
 	$(NVCC) $(NVCCFLAGS) -c $<
 
 shallow2d_cu.o: shallow2d.cu
