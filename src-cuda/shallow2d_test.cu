@@ -11,13 +11,6 @@ typedef void (*flux_t)(float* FU, float* GU, const float* U,
 typedef void (*speed_t)(float* cxy, const float* U,
                         int nx, int ny, int field_stride);
 
-void testShallow2d_by_reference(float* cxy, 
-				float* FU, float* GU, const float* U,
-                int nx, int ny, int field_stride){
-	shallow2d_flux_cu(FU, GU, U, nx, ny, field_stride);
-	shallow2d_speed_cu(cxy, U, nx, ny, field_stride);
-}
-
 void testShallow2d_by_pointer(float* cxy, 
 				float* FU, float* GU, const float* U,
                 int nx, int ny, int field_stride,
@@ -38,6 +31,16 @@ void print_array(float* array, int len) {
 	    printf("%.2f ", array[i]);    
 	}
 	printf("\n");
+}
+
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
 }
 
 int main(int argc, char** argv){
@@ -83,10 +86,10 @@ int main(int argc, char** argv){
 	// device copies of FU, GU, U
     float *dev_FU, *dev_GU, *dev_U, *dev_cxy;
     int size = ncell*3*sizeof(float);
-    cudaMalloc( (void**)&dev_FU, size );
-    cudaMalloc( (void**)&dev_GU, size );
-    cudaMalloc( (void**)&dev_U,  size );
-    cudaMalloc( (void**)&dev_cxy, 2*sizeof(float) );
+    gpuErrchk(cudaMalloc( (void**)&dev_FU, size ));
+    gpuErrchk(cudaMalloc( (void**)&dev_GU, size ));
+    gpuErrchk(cudaMalloc( (void**)&dev_U,  size ));
+    gpuErrchk(cudaMalloc( (void**)&dev_cxy, 2*sizeof(float) ));
 	// copy the reseted data to GPU
 	cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
