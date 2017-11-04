@@ -20,13 +20,13 @@ include ../config/Makefile.in.$(PLATFORM)
 # CUDA Main driver and sample run
 
 shallow2d_test: shallow2d_test.o shallow2d.o shallow2d_cu.o
-	$(NVCC) -o $@ $^ $(LIBS) -dc
+	$(NVCC) -o $@ $^ $(NVCCLIBS)
 
-shallow2d_test.o: shallow2d_test.cu
-	$(NVCC) -c $< -dc
+shallow2d_test.o: shallow2d_test.cu shallow2d.cuh shallow2d.h
+	$(NVCC) -c $<
 
 shallow2d_cu.o: shallow2d.cu
-	$(NVCC) -c $< -dc
+	$(NVCC) -c $<
 
 shallow2d.o: shallow2d.c
 	$(CC) $(CFLAGS) -c $<
