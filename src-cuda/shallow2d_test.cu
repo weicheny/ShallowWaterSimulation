@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 extern "C" {
 #include "shallow2d.cuh"
 #include "shallow2d_base.h"
@@ -41,11 +42,18 @@ int main(int argc, char** argv){
 	for (i = 0; i < ncell * 3; i++) {
     	FU[i] = 1; GU[i] = 1; U[i] = 1;
 	}
-	print_array(FU, ncell*3);
+	// print_array(FU, ncell*3);
 
 	// Execute baseline code
+	double t0 = omp_get_wtime();
 	testShallow2d_baseline(cxy, FU, GU, U, nx, ny, field_stride);
-	print_array(FU, ncell*3);
+    double t1 = omp_get_wtime();
+    printf("CPU code time: %f\n", t1-t0);
+    // save true values
+	float tFU[ncell * 3], tGU[ncell * 3], tU[ncell * 3];
+	for (i = 0; i < ncell * 3; i++) {
+    	tFU[i] = FU[i]; tGU[i] = GU[i]; tU[i] = U[i];
+	}
 
 	// Reset
 	for (i = 0; i < ncell * 3; i++) {
@@ -60,15 +68,25 @@ int main(int argc, char** argv){
     cudaMalloc( (void**)&dev_GU, size );
     cudaMalloc( (void**)&dev_U,  size );
     cudaMalloc( (void**)&dev_cxy, 2*sizeof(float) );
+    // We only need to copy to device once, this time should be amortized.
     cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
+	double t2 = omp_get_wtime();
 	testShallow2d_by_reference(dev_cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride);
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
 	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );
-	print_array(FU, ncell*3);
+	double t3 = omp_get_wtime();
+	printf("GPU code time: %f\n", t3-t2);
+	printf("Check correctness ")
+	for (i = 0; i < ncell * 3; i++) {
+    	if (FU[i] != tFU[i] or GU[i] != tFU or U[i] != tU[i]){
+    		printf("Wrong! \n");
+    	}
+	}
+	printf("\n");
 
 	cudaFree( dev_FU );
 	cudaFree( dev_GU );
