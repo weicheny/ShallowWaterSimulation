@@ -18,6 +18,14 @@ void testShallow2d_by_reference(float* cxy,
 	shallow2d_speed_cu(cxy, U, nx, ny, field_stride);
 }
 
+void testShallow2d_by_pointer(float* cxy, 
+				float* FU, float* GU, const float* U,
+                int nx, int ny, int field_stride,
+                flux_t flux, speed_t speed){
+	flux(FU, GU, U, nx, ny, field_stride);
+	speed(cxy, U, nx, ny, field_stride);
+}
+
 void testShallow2d_baseline(float* cxy, 
 				float* FU, float* GU, const float* U,
                 int nx, int ny, int field_stride){
@@ -71,7 +79,7 @@ int main(int argc, char** argv){
     	FU[i] = 1; GU[i] = 1; U[i] = 1;
 	}
 
-	// Execute on GPU
+	// Execute on GPU: Use function reference
 	// device copies of FU, GU, U
     float *dev_FU, *dev_GU, *dev_U, *dev_cxy;
     int size = ncell*3*sizeof(float);
@@ -85,6 +93,7 @@ int main(int argc, char** argv){
     cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
     cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
 
+    // Time the GPU
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 	cudaEventRecord(start, 0);
@@ -94,6 +103,7 @@ int main(int argc, char** argv){
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&ms, start, stop);
+	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
 	printf("GPU: %f ms. \n",ms);
 
 	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
@@ -106,6 +116,39 @@ int main(int argc, char** argv){
     		printf("Wrong! \n");
    
 	printf("\n");
+
+	// Reset
+	for (i = 0; i < ncell * 3; i++) {
+    	FU[i] = 1; GU[i] = 1; U[i] = 1;
+	}
+
+	// Execute on GPU: using function pointer
+	// copy the reseted data to GPU
+	cudaMemcpy( dev_FU, FU, size, cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_GU, GU, size, cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_U,  U,  size, cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_cxy, cxy, size, cudaMemcpyHostToDevice);
+
+    // Time the GPU
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start, 0);
+
+	testShallow2d_by_pointer(
+		dev_cxy, dev_FU, dev_GU, dev_U, nx, ny, field_stride,
+		shallow2d_flux_cu,
+		shallow2d_speed_cu
+	);
+
+	cudaEventRecord(stop, 0);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(&ms, start, stop);
+	printf("GPUassert: %s\n", cudaGetErrorString(cudaGetLastError()));
+	printf("GPU: %f ms. \n",ms);
+
+	cudaMemcpy( FU, dev_FU, size, cudaMemcpyDeviceToHost );
+	cudaMemcpy( GU, dev_GU, size, cudaMemcpyDeviceToHost );
+	cudaMemcpy( U,  dev_U,  size, cudaMemcpyDeviceToHost );	
 
 	cudaFree( dev_FU );
 	cudaFree( dev_GU );
